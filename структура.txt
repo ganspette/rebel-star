@@ -1,0 +1,108 @@
+Структура файлов:
+RebelStar/ (Корневая директория)
+│
+├── main.py                              # Точка входа в игру
+├── requirements.txt                     # Зависимости (pygame)
+├── README.md                            # Описание проекта
+│
+├── config/                              # Конфигурационные файлы
+│   └── game_config.json                 # Настройки игры (автогенерация)
+│
+├── saves/                               # Сохранения игрока
+│   ├── save_20240115_103000.json       # Пример сохранения
+│   └── autosave_20240115_104500.json   # Автосохранение
+│
+├── resources/                           # Ресурсы игры
+│   └── sprites/                         # Спрайты (изображения)
+│       ├── easy.png                     # Спрайт легкого юнита
+│       ├── average.png                  # Спрайт среднего юнита
+│       ├── heavy.png                    # Спрайт тяжелого юнита
+│       ├── enemy_easy.png               # Спрайт легкого врага
+│       ├── enemy_average.png            # Спрайт среднего врага
+│       ├── enemy_heavy.png              # Спрайт тяжелого врага
+│       ├── dead.png                     # Труп союзника
+│       ├── enemy_dead.png               # Труп врага
+│       ├── wall.png                     # Стена
+│       └── floor.png                    # Пол
+│
+├── core/                                # Ядро игры
+│   ├── __init__.py                      # Инициализация модуля
+│   ├── game.py                          # Главный класс Game
+│   ├── constants.py                     # Константы и настройки
+│   ├── sprite_loader.py                 # Загрузчик спрайтов
+│   ├── game_manager.py                  # Менеджер игрового состояния
+│   ├── input_handler.py                 # Обработчик ввода (клавиатура/мышь)
+│   ├── combat_system.py                 # Система боя и пуль
+│   ├── line_of_sight.py                 # Система прямой видимости
+│   ├── save_system.py                   # Система сохранения игры
+│   ├── load_system.py                   # Система загрузки игры
+│   ├── exceptions.py                    # Пользовательские исключения
+│   └── refactoring_utils.py             # Утилиты для рефакторинга
+│
+├── systems/                             # Вспомогательные системы
+│   ├── __init__.py                      # Инициализация модуля
+│   ├── camera.py                        # Камера и зум
+│   └── game_state.py                    # Состояние игры (меню/игра/пауза)
+│
+├── units/                               # Система юнитов
+│   ├── __init__.py                      # Инициализация модуля
+│   └── unit.py                          # Класс Unit (юнит)
+│
+├── maps/                                # Карты и уровни
+│   ├── __init__.py                      # Инициализация модуля
+│   └── test_map.py                      # Тестовая карта
+│
+├── game_objects/                        # Игровые объекты
+│   ├── __init__.py                      # Инициализация модуля
+│   ├── weapon.py                        # Класс Weapon (оружие)
+│   ├── ammo.py                          # Класс Ammo (патроны)
+│   └── bullet.py                        # Класс Bullet (пуля)
+│
+├── ui/                                  # Пользовательский интерфейс
+│   ├── __init__.py                      # Инициализация модуля
+│   ├── main_menu.py                     # Главное меню
+│   ├── in_game_menu.py                  # Меню паузы (исправленное)
+│   ├── pickup_menu.py                   # Меню подбора предметов
+│   ├── inventory_menu.py                # Меню инвентаря
+│   ├── map_selection_menu.py           # Меню выбора карты
+│   ├── corpse_pickup_menu.py           # Меню подбора с трупа
+│   └── notification_system.py           # Система уведомлений
+│
+└── tests/                               # Тесты (опционально)
+    ├── __init__.py
+    └── test_exceptions.py
+	
+Взаимодействие компонентов:
+main.py
+    ↓
+Game (core/game.py)
+    ├── GameManager (core/game_manager.py)
+    │   ├── GameState (systems/game_state.py)
+    │   ├── Camera (systems/camera.py)
+    │   ├── CombatSystem (core/combat_system.py)
+    │   ├── LineOfSight (core/line_of_sight.py)
+    │   └── TestMap (maps/test_map.py)
+    │       └── Unit (units/unit.py)
+    │           ├── Weapon (game_objects/weapon.py)
+    │           └── Ammo (game_objects/ammo.py)
+    ├── InputHandler (core/input_handler.py)
+    ├── SpriteLoader (core/sprite_loader.py)
+    └── UI меню (ui/)
+        ├── MainMenu
+        ├── InGameMenu
+        ├── PickupMenu
+        ├── InventoryMenu
+        ├── MapSelectionMenu
+        └── CorpsePickupMenu
+
+Ключевые потоки данных:
+Игровой цикл:
+main.py → Game.run() → handle_events() → update() → draw()
+Обработка ввода:
+InputHandler → Game → GameManager → Unit/CombatSystem
+Боевая система:
+InputHandler (ПКМ) → GameManager.can_attack_target() → CombatSystem.create_bullet() → Bullet.update()
+Система обзора:
+GameManager.update_line_of_sight() → LineOfSight.get_visible_enemies()
+Меню:
+Game → UI меню → Unit (для инвентаря) → TestMap (для предметов на карте)
